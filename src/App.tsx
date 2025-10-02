@@ -1,7 +1,6 @@
 import Banner from './components/Banner';
-import CourseList from './components/CourseList';
 import { useSchedule } from './utilities/courseScheduleFetch';
-
+import RadioControl from './components/RadioControl';
 
 const App = () => {
   const { schedule, loading, error } = useSchedule("https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php");
@@ -11,10 +10,10 @@ const App = () => {
   if (!schedule) return <div>No schedule available</div>;
 
   return (
-  <div>
-    <Banner title={schedule.title} />
-    <CourseList courses={schedule.courses} />
-  </div>
+    <div className="p-4">
+      <Banner title={schedule.title} />
+      <RadioControl courses={schedule.courses} /> 
+    </div>
   );
 }
 export default App;
