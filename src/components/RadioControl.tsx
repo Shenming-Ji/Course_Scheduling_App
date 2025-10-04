@@ -10,10 +10,12 @@ type Course = {
 
 type RadioControlProps = {
   courses: Record<string, Course>;
+  
 };
 
 const RadioControl = ({ courses }: RadioControlProps) => {
   const [selectedTerm, setSelectedTerm] = useState<string>("Fall");
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
 
   const allTerms = ["Fall", "Winter", "Spring", "Summer"]
     .filter((term) => Object.values(courses).some((c) => c.term === term));
@@ -23,6 +25,12 @@ const RadioControl = ({ courses }: RadioControlProps) => {
       setSelectedTerm(allTerms[0]);
     }
   }, [allTerms, selectedTerm]);
+
+  const selectCourse = (id: string) => {
+    setSelectedCourses(prev =>
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
 
   const filteredCourses = Object.fromEntries(
     Object.entries(courses).filter(([, course]) => course.term === selectedTerm)
@@ -46,7 +54,10 @@ const RadioControl = ({ courses }: RadioControlProps) => {
         ))}
       </div>
 
-      <CourseList courses={filteredCourses} />
+      <CourseList courses={filteredCourses}
+      selectedCourses={selectedCourses} 
+      selectCourse={selectCourse} 
+      />
     </div>
   );
 };
