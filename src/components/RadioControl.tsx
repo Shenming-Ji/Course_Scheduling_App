@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CourseList from "./CourseList";
+import Modal from "./Modal";
 
 type Course = {
   term: string;
@@ -16,6 +17,7 @@ type RadioControlProps = {
 const RadioControl = ({ courses }: RadioControlProps) => {
   const [selectedTerm, setSelectedTerm] = useState<string>("Fall");
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [isPlanOpen, setIsPlanOpen] = useState(false);
 
   const allTerms = ["Fall", "Winter", "Spring", "Summer"]
     .filter((term) => Object.values(courses).some((c) => c.term === term));
@@ -36,6 +38,8 @@ const RadioControl = ({ courses }: RadioControlProps) => {
     Object.entries(courses).filter(([, course]) => course.term === selectedTerm)
   );
 
+  const selectedCourseObjects = selectedCourses.map((id) => courses[id]);
+
   return (
     <div>
       <div className="flex gap-4 my-4" style={{ marginLeft: '1.3rem' }}>
@@ -47,17 +51,39 @@ const RadioControl = ({ courses }: RadioControlProps) => {
               value={option}
               checked={option === selectedTerm}
               onChange={() => setSelectedTerm(option)}
-              className="accent-blue-600"
+              className="accent-purple-600"
             />
             <span>{option}</span>
           </label>
         ))}
       </div>
+      
+      <button className="ml-218 px-5 py-5 bg-purple-600 text-white rounded"
+          onClick={() => setIsPlanOpen(true)}
+          >
+          Course Plan
+        </button>
 
       <CourseList courses={filteredCourses}
       selectedCourses={selectedCourses} 
       selectCourse={selectCourse} 
       />
+
+      <Modal isOpen={isPlanOpen} onClose={() => setIsPlanOpen(false)}>
+        <h2 className="text-lg">Your Course Plan</h2>
+
+        {selectedCourseObjects.length === 0 ? (
+          <p>You haven't selected any courses yet. Click on courses to add them to your plan！</p>
+        ) : (
+          <ul className="space-y-3">
+            {selectedCourseObjects.map((course) => (
+              <li key={course.number}>
+                <span className="font-medium">{course.number}</span> - {course.title} ({course.meets})
+              </li>
+            ))}
+          </ul>
+        )}
+      </Modal>
     </div>
   );
 };
