@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import CourseList from "./CourseList";
+import { coursesConflict } from "../utilities/timeConflict";
 import Modal from "./Modal";
 
 type Course = {
@@ -40,6 +41,17 @@ const RadioControl = ({ courses }: RadioControlProps) => {
 
   const selectedCourseObjects = selectedCourses.map((id) => courses[id]);
 
+  const disabledCourseIds = new Set<string>();
+  for (const [id, course] of Object.entries(filteredCourses)) {
+    for (const selectedId of selectedCourses) {
+      const selected = courses[selectedId];
+      if (!selected) continue;
+      if (coursesConflict(course, selected)) {
+        if (!selectedCourses.includes(id)) disabledCourseIds.add(id);
+      }
+    }
+  }
+
   return (
     <div>
       <div className="flex gap-4 my-4" style={{ marginLeft: '1.3rem' }}>
@@ -66,7 +78,8 @@ const RadioControl = ({ courses }: RadioControlProps) => {
 
       <CourseList courses={filteredCourses}
       selectedCourses={selectedCourses} 
-      selectCourse={selectCourse} 
+      selectCourse={selectCourse}
+      disabledCourses={disabledCourseIds}
       />
 
       <Modal isOpen={isPlanOpen} onClose={() => setIsPlanOpen(false)}>
