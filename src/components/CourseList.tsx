@@ -5,11 +5,12 @@ type Course = {
     title: string;
 }
 
-type CourseListProps = { 
-    courses: Record<string, Course>
-    selectedCourses: string[];
-    selectCourse: (id: string) => void;
-    disabledCourses?: Set<string>;
+type CourseListProps = {
+  courses: Record<string, Course>;
+  selectedCourses: string[];
+  selectCourse: (id: string) => void;
+  disabledCourses: Set<string>;
+  openEditFor: (id: string) => void;
 };
 
 const CourseList = ({ courses, selectedCourses, selectCourse, disabledCourses = new Set<string>() }: CourseListProps) => {
@@ -41,6 +42,19 @@ const CourseList = ({ courses, selectedCourses, selectCourse, disabledCourses = 
                         </div>
                         <div className="text-gray-600">
                             {course.meets}
+                        </div>
+                        <div className="mt-3">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const url = `/edit/${key}`;
+                                    window.history.pushState({}, '', url);
+                                    window.dispatchEvent(new PopStateEvent('popstate'));
+                                }}
+                                className="mt-2 px-3 py-1 text-sm bg-gray-100 border rounded hover:bg-gray-200"
+                            >
+                                Edit Form
+                            </button>
                         </div>
                     </div>
                     );
