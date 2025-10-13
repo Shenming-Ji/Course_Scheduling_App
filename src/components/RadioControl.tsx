@@ -83,7 +83,7 @@ const RadioControl = ({ courses }: RadioControlProps) => {
         ))}
       </div>
       
-      <button className="ml-218 px-5 py-5 bg-purple-600 text-white rounded"
+      <button className="ml-5 px-5 py-5 bg-purple-600 text-white rounded"
           onClick={() => setIsPlanOpen(true)}
           >
           Course Plan
