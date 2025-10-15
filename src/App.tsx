@@ -3,9 +3,11 @@ import Banner from './components/Banner';
 import { useSchedule } from './utilities/courseScheduleFetch';
 import RadioControl from './components/RadioControl';
 import EditCourse from './pages/EditCourse';
+import { getDatabase, ref, set } from 'firebase/database';
+import { app } from './firebase';
 
 const App = () => {
-  const { schedule, loading, error } = useSchedule("https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php");
+  const { schedule, loading, error } = useSchedule("/");
   const [route, setRoute] = useState(window.location.pathname);
 
   useEffect(() => {
@@ -16,7 +18,32 @@ const App = () => {
 
   if (loading) return <div>Schedule Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
-  if (!schedule) return <div>No schedule available</div>;
+  const seedSample = async () => {
+    const db = getDatabase(app);
+    const sample = {
+      title: 'Sample Schedule',
+      courses: {
+        F101: { term: 'Fall', number: '101', meets: 'MWF 11:00-11:50', title: 'Intro to CS' },
+        F110: { term: 'Fall', number: '110', meets: 'MWF 10:00-10:50', title: 'Programming I' }
+      }
+    };
+    await set(ref(db, '/'), sample);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  if (!schedule) {
+    return (
+      <div className="p-4">
+        <Banner title="No schedule" />
+        <div className="p-4">
+          <p>No schedule available in the Realtime Database root.</p>
+          <button className="mt-3 px-3 py-2 bg-purple-600 text-white rounded" onClick={seedSample}>
+            Seed sample schedule
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const editMatch = route.match(/^\/edit\/(.+)$/);
   if (editMatch) {

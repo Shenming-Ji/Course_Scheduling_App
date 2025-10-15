@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getDatabase } from 'firebase/database';
 // Follow this pattern to import other Firebase services
 // import { } from 'firebase/<service>';
 
@@ -7,6 +8,7 @@ import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 const firebaseConfig = {
   apiKey: "AIzaSyCOPpVQr0xX6YAKYVnG9H2dvk_cMGiOWpY",
   authDomain: "coursesscheduler.firebaseapp.com",
+  databaseURL: "https://coursesscheduler-default-rtdb.firebaseio.com",
   projectId: "coursesscheduler",
   storageBucket: "coursesscheduler.firebasestorage.app",
   messagingSenderId: "781262097057",
@@ -15,6 +17,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const realtimeDb = getDatabase(app);
+
+export { app, db, realtimeDb };
 
 // Get a list of cities from your database
 async function getCities(db) {
