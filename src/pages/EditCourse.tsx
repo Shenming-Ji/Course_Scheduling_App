@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { getDatabase, ref, set } from 'firebase/database';
+import { app } from '../firebase';
 import { parseMeeting } from '../utilities/timeConflict';
 
 type Course = {
@@ -30,7 +32,30 @@ const EditCourse = ({ courseId, course, onCancel }: EditCourseProps) => {
       // don't submit when invalid
       return;
     }
-    // per spec: no-op submit when valid
+    const original = course ?? { term: '', number: '', meets: '', title: '' };
+    const changes: Partial<typeof original> = {};
+    if (term !== original.term) changes.term = term;
+    if (number !== original.number) changes.number = number;
+    if (meets !== original.meets) changes.meets = meets;
+    if (title !== original.title) changes.title = title;
+
+    if (Object.keys(changes).length === 0) {
+      window.history.pushState({}, '', '/');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      return;
+    }
+    (async () => {
+      try {
+        const db = getDatabase(app);
+  const coursePath = `/courses/${courseId}`;
+  const merged = { ...original, ...changes };
+  await set(ref(db, coursePath), merged as Record<string, any>);
+        window.history.pushState({}, '', '/');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      } catch (err) {
+        setErrors((prev) => ({ ...prev, form: (err as Error).message || 'Save failed' }));
+      }
+    })();
   };
 
   function validateCourse({ term, number, meets, title }: { term: string; number: string; meets: string; title: string }) {
