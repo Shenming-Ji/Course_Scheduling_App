@@ -1,3 +1,5 @@
+import { useAuthState } from '../utilities/firebase';
+
 type Course = {
     term: string;
     number: string;
@@ -15,6 +17,7 @@ type CourseListProps = {
 
 const CourseList = ({ courses, selectedCourses, selectCourse, disabledCourses = new Set<string>() }: CourseListProps) => {
     const entries = Object.entries(courses) as [string, Course][];
+        const { isAuthenticated } = useAuthState();
     return (
         <section aria-label="Courses" className="p-4">
             <div className="grid grid-cols-[repeat(auto-fill,_minmax(220px,_1fr))] gap-4">
@@ -43,19 +46,21 @@ const CourseList = ({ courses, selectedCourses, selectCourse, disabledCourses = 
                         <div className="text-gray-600">
                             {course.meets}
                         </div>
-                        <div className="mt-3">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    const url = `/edit/${key}`;
-                                    window.history.pushState({}, '', url);
-                                    window.dispatchEvent(new PopStateEvent('popstate'));
-                                }}
-                                className="mt-2 px-3 py-1 text-sm bg-gray-100 border rounded hover:bg-gray-200"
-                            >
-                                Edit Form
-                            </button>
-                        </div>
+                        {isAuthenticated && (
+                          <div className="mt-3">
+                              <button
+                                  onClick={(e) => {
+                                      e.stopPropagation();
+                                      const url = `/edit/${key}`;
+                                      window.history.pushState({}, '', url);
+                                      window.dispatchEvent(new PopStateEvent('popstate'));
+                                  }}
+                                  className="mt-2 px-3 py-1 text-sm bg-gray-100 border rounded hover:bg-gray-200"
+                              >
+                                  Edit Form
+                              </button>
+                          </div>
+                        )}
                     </div>
                     );
                 })}
