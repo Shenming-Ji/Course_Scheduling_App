@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import Banner from './components/Banner';
-import { useSchedule } from './utilities/courseScheduleFetch';
 import RadioControl from './components/RadioControl';
 import EditCourse from './pages/EditCourse';
 import { getDatabase, ref, set } from 'firebase/database';
 import { app } from './firebase';
+import useDataQuery from './utilities/useDataQuery';
 
 const App = () => {
-  const { schedule, loading, error } = useSchedule("/");
+  const [courses, loadingCourses, errorCourses] = useDataQuery<Record<string, any>>('/courses');
+  const [title, loadingTitle, errorTitle] = useDataQuery<string>('/title');
+  const loading = loadingCourses || loadingTitle;
+  const error = errorCourses ?? errorTitle;
+  const schedule = (courses || null) ? { title: title ?? 'Schedule', courses: courses ?? {} } : null;
   const [route, setRoute] = useState(window.location.pathname);
 
   useEffect(() => {
@@ -20,14 +24,13 @@ const App = () => {
   if (error) return <div>Error: {error.message}</div>;
   const seedSample = async () => {
     const db = getDatabase(app);
-    const sample = {
-      title: 'Sample Schedule',
-      courses: {
-        F101: { term: 'Fall', number: '101', meets: 'MWF 11:00-11:50', title: 'Intro to CS' },
-        F110: { term: 'Fall', number: '110', meets: 'MWF 10:00-10:50', title: 'Programming I' }
-      }
+    const sampleTitle = 'Sample Schedule';
+    const sampleCourses = {
+      F101: { term: 'Fall', number: '101', meets: 'MWF 11:00-11:50', title: 'Intro to CS' },
+      F110: { term: 'Fall', number: '110', meets: 'MWF 10:00-10:50', title: 'Programming I' }
     };
-    await set(ref(db, '/'), sample);
+    await set(ref(db, '/title'), sampleTitle);
+    await set(ref(db, '/courses'), sampleCourses);
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
