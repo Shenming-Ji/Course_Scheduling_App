@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom'
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type NextOrObserver, type User} from 'firebase/auth';
+import useDataQuery from './useDataQuery';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCOPpVQr0xX6YAKYVnG9H2dvk_cMGiOWpY",
@@ -48,4 +49,13 @@ export const useAuthState = (): AuthState => {
     }), [])
 
   return {user, isAuthenticated, isInitialLoading };
+};
+
+export const useIsAdmin = () => {
+  const { user, isAuthenticated, isInitialLoading } = useAuthState();
+  const path = user ? `/admins/${user.uid}` : '/admins/__no_user__';
+  const [data, loading, error] = useDataQuery<boolean>(path);
+  const isAdmin = !!data;
+  const isLoading = isInitialLoading || loading;
+  return { isAdmin, isLoading, isAuthenticated, user, error };
 };

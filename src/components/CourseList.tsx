@@ -1,4 +1,4 @@
-import { useAuthState } from '../utilities/firebase';
+import { useIsAdmin } from '../utilities/firebase';
 
 type Course = {
     term: string;
@@ -17,7 +17,7 @@ type CourseListProps = {
 
 const CourseList = ({ courses, selectedCourses, selectCourse, disabledCourses = new Set<string>() }: CourseListProps) => {
     const entries = Object.entries(courses) as [string, Course][];
-        const { isAuthenticated } = useAuthState();
+    const { isAdmin } = useIsAdmin();
     return (
         <section aria-label="Courses" className="p-4">
             <div className="grid grid-cols-[repeat(auto-fill,_minmax(220px,_1fr))] gap-4">
@@ -46,7 +46,7 @@ const CourseList = ({ courses, selectedCourses, selectCourse, disabledCourses = 
                         <div className="text-gray-600">
                             {course.meets}
                         </div>
-                        {isAuthenticated && (
+                        {isAdmin && (
                           <div className="mt-3">
                               <button
                                   onClick={(e) => {
