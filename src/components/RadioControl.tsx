@@ -69,7 +69,7 @@ const RadioControl = ({ courses }: RadioControlProps) => {
     <div>
       <div className="flex gap-4 my-4" style={{ marginLeft: '1.3rem' }}>
         {allTerms.map((option) => (
-          <label key={option} className="flex items-center gap-2 cursor-pointer">
+          <label key={option} className="flex items-center gap-2 cursor-pointer" data-cy={option}>
             <input
               type="radio"
               name="term"
