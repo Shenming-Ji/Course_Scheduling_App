@@ -27,6 +27,7 @@ const CourseList = ({ courses, selectedCourses, selectCourse, disabledCourses = 
                     return (
                         <div
                             key={key}
+                            data-cy="course"
                             onClick={() => {
                                 if (isDisabled) return; 
                                 selectCourse(key);
